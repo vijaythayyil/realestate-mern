@@ -1,5 +1,5 @@
-export const errorHandler = (status, message) => {
-  const error = new Error(); // Create a new error object with the Error constructor function
+export const errorHandler = (statusCode, message) => {
+  const error = new Error();
   error.statusCode = statusCode;
   error.message = message;
   return error;

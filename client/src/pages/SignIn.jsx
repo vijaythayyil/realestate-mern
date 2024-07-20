@@ -1,11 +1,18 @@
-import { set } from "mongoose";
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { signInStart, signInSuccess, signInFailure } from "../redux/slices/userSlice";
+import OAuth from "../components/OAuth";
 
 const SignIn = () => {
   const [formData, setFormData] = useState();
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+
+  // const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch(); //useDispatch is a hook that allows us to dispatch actions
+  const { error, loading } = useSelector((state) => state.user); //useSelector is a hook that allows us to select data from the redux store
+  // console.log("Error in component: ", error);
+
   const navigate = useNavigate(); //useNavigate is a hook that allows us to navigate to different routes
   // different from Link component which is used to navigate to different routes by clicking on it
 
@@ -18,7 +25,7 @@ const SignIn = () => {
     event.preventDefault(); // Prevents the default browser behavior of submitting the form to a new page prevent reloading the page
 
     try {
-      setLoading(true);
+      dispatch(signInStart()); //dispatching the signInStart action
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -30,18 +37,18 @@ const SignIn = () => {
       console.log(data);
 
       if (data.success == false) {
-        setLoading(false);
-        setError(data.message);
+        dispatch(signInFailure(data.message)); //dispatching the signInFailure action
+        // setLoading(false);
+        // setError(data.message);
 
         return;
       }
 
-      setLoading(false);
-      setError(null);
+      dispatch(signInSuccess(data)); //dispatching the signInSuccess action
       navigate("/");
     } catch (error) {
-      setError(error.message);
-      setLoading(false);
+      dispatch(signInFailure(data.message));
+      return;
     }
   };
 
@@ -68,6 +75,7 @@ const SignIn = () => {
           type="submit">
           {loading ? "Loading..." : "Sign In"} {/*conditional rendering */}
         </button>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>
@@ -77,7 +85,7 @@ const SignIn = () => {
           </Link>
         </p>
       </div>
-      {error && <p className="text-red-500 text-center mt-5">{error}</p>}
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 };

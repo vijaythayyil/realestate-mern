@@ -1,6 +1,7 @@
 import { set } from "mongoose";
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import OAuth from "../components/OAuth";
 
 const SignUp = () => {
   const [formData, setFormData] = useState();
@@ -49,12 +50,33 @@ const SignUp = () => {
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-2xl text-center font-semibold my-5">SignUp</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input type="text" placeholder="Username" className="border p-3 rounded-lg" id="username" onChange={handleChange} />
-        <input type="email" placeholder="john@email.com" className="border p-3 rounded-lg" id="email" onChange={handleChange} />
-        <input type="password" placeholder="Password" className="border p-3 rounded-lg" id="password" onChange={handleChange} />
-        <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80" type="submit">
+        <input
+          type="text"
+          placeholder="Username"
+          className="border p-3 rounded-lg"
+          id="username"
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          placeholder="john@email.com"
+          className="border p-3 rounded-lg"
+          id="email"
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-3 rounded-lg"
+          id="password"
+          onChange={handleChange}
+        />
+        <button
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          type="submit">
           {loading ? "Loading..." : "Sign Up"} {/*conditional rendering */}
         </button>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>

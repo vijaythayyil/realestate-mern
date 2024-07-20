@@ -1,31 +1,26 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
-import OAuth from "../components/OAuth";
+import { useDispatch, useSelector } from "react-redux";
+import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice.js";
+import OAuth from "../components/OAuth.jsx";
 
 const SignIn = () => {
-  const [formData, setFormData] = useState();
+  const [formData, setFormData] = useState({});
+  const { loading, error } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
-  // const [error, setError] = useState(null);
-  // const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch(); //useDispatch is a hook that allows us to dispatch actions
-  const { error, loading } = useSelector((state) => state.user); //useSelector is a hook that allows us to select data from the redux store
-  // console.log("Error in component: ", error);
+  const dispatch = useDispatch();
 
-  const navigate = useNavigate(); //useNavigate is a hook that allows us to navigate to different routes
-  // different from Link component which is used to navigate to different routes by clicking on it
-
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.id]: event.target.value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
     console.log(formData);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevents the default browser behavior of submitting the form to a new page prevent reloading the page
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     try {
-      dispatch(signInStart()); //dispatching the signInStart action
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -37,28 +32,24 @@ const SignIn = () => {
       console.log(data);
 
       if (data.success == false) {
-        dispatch(signInFailure(data.message)); //dispatching the signInFailure action
-        // setLoading(false);
-        // setError(data.message);
-
+        dispatch(signInFailure(data.message));
         return;
       }
 
-      dispatch(signInSuccess(data)); //dispatching the signInSuccess action
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      dispatch(signInFailure(data.message));
-      return;
+      dispatch(signInFailure(error.message));
     }
   };
 
   return (
     <div className="p-3 max-w-lg mx-auto">
-      <h1 className="text-2xl text-center font-semibold my-5">Sign In</h1>
+      <h1 className="text-3xl text-center font-semibold my-7">Sign In</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="email"
-          placeholder="john@email.com"
+          placeholder="Email"
           className="border p-3 rounded-lg"
           id="email"
           onChange={handleChange}
@@ -71,23 +62,23 @@ const SignIn = () => {
           onChange={handleChange}
         />
         <button
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-          type="submit">
-          {loading ? "Loading..." : "Sign In"} {/*conditional rendering */}
+          disabled={loading}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
+          {loading ? "Loading..." : "Sign In"}
         </button>
         <OAuth />
       </form>
+
       <div className="flex gap-2 mt-5">
-        <p>
-          Dont have an account?
-          <Link to="/sign-up">
-            <span className="text-blue-500"> Sign Up </span>
-          </Link>
-        </p>
+        <p>Dont have an account?</p>
+        <Link to={"/sign-up"}>
+          <span className="text-blue-700">Sign Up</span>
+        </Link>
       </div>
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 m">{error}</p>}
     </div>
   );
 };
 
 export default SignIn;
+//done
